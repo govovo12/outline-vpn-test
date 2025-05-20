@@ -1,0 +1,32 @@
+name: Test Outline VPN via ss-local
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test-outline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Shadowsocks client
+        run: |
+          sudo apt update
+          sudo apt install -y shadowsocks-libev
+
+      - name: Create ss config
+        run: |
+          echo '{
+            "server":"18.179.245.45",
+            "server_port":38502,
+            "password":"yWqpMAlmryx32vs0vwPV Sg",
+            "method":"chacha20-ietf-poly1305",
+            "local_port":1080
+          }' > ss-config.json
+
+      - name: Start ss-local in background
+        run: |
+          nohup ss-local -c ss-config.json > ss.log 2>&1 &
+          sleep 5  # 等待代理啟動
+
+      - name: Check IP through proxy
+        run: |
+          curl --socks5-hostname 127.0.0.1:1080 https://ipinfo.io/ip
