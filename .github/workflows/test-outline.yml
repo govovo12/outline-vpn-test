@@ -22,6 +22,11 @@ jobs:
             "local_port":1080
           }' > ss-config.json
 
+      - name: Test port connectivity to Outline Server
+        run: |
+          echo "Checking if GitHub runner can connect to your Outline server..."
+          nc -vz 18.179.245.45 38502 || echo "❌ Cannot connect to Outline port"
+
       - name: Start ss-local in background
         run: |
           nohup ss-local -c ss-config.json > ss.log 2>&1 &
@@ -30,3 +35,4 @@ jobs:
       - name: Check IP through proxy
         run: |
           curl --socks5-hostname 127.0.0.1:1080 https://ipinfo.io/ip
+
